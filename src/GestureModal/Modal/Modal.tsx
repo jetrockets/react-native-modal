@@ -13,7 +13,7 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
-import { STARTING_POSITION, SH_COLORS } from './constants';
+import { STARTING_POSITION, BACKDROP_COLORS } from './constants';
 import styles from './styles';
 import { Props } from './types';
 
@@ -63,7 +63,7 @@ const Modal = React.memo(({ visible, setVisible, children, destroy }: Props) => 
   });
 
   const animatedStyles = useAnimatedStyle(() => {
-    return { backgroundColor: interpolateColor(scrollY.value, [0, contentHeight], SH_COLORS) };
+    return { backgroundColor: interpolateColor(scrollY.value, [0, contentHeight], BACKDROP_COLORS) };
   });
 
   const containerStyles = useAnimatedStyle(() => ({ transform: [{ translateY: scrollY.value }] }));

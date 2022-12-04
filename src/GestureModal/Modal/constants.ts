@@ -1,7 +1,9 @@
 import { rgba } from 'polished';
+import { Platform } from 'react-native';
 
-const BACKDROP_COLOR = '#51284F'
-
+const TARGET_COLOR = '#51284F';
 
 export const STARTING_POSITION = 100;
-export const SH_COLORS = [rgba(BACKDROP_COLOR, 0.5), rgba(BACKDROP_COLOR, 0)];
+
+const BACKDROP_FACTOR = Platform.select({ android: 0.75, ios: 0.5 });
+export const BACKDROP_COLORS = [rgba(TARGET_COLOR, BACKDROP_FACTOR), rgba(TARGET_COLOR, 0)];
