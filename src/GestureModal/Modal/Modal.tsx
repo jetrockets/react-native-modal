@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { LayoutRectangle, Platform, Pressable, StyleSheet, useWindowDimensions, View } from 'react-native';
+import { LayoutRectangle, Platform, StyleSheet, TouchableOpacity, useWindowDimensions, View } from 'react-native';
 import { PanGestureHandler } from 'react-native-gesture-handler';
 import Animated, {
   interpolateColor,
@@ -14,27 +14,35 @@ import Animated, {
 } from 'react-native-reanimated';
 
 import { STARTING_POSITION, SH_COLORS } from './constants';
-import s from './styles';
+import styles from './styles';
 import { Props } from './types';
 
 const Modal = React.memo(({ visible, setVisible, children, destroy }: Props) => {
   const windowDimensions = useWindowDimensions();
-  const contentHeightRef = React.useRef<LayoutRectangle['height']>(windowDimensions.height);
+  const [contentHeight, setContentHeight] = React.useState<LayoutRectangle['height']>(windowDimensions.height);
 
   const scrollY = useSharedValue(windowDimensions.height);
+
+  const targetHeight = React.useMemo(() => contentHeight + STARTING_POSITION, [contentHeight]);
 
   useAnimatedReaction(
     () => {
       if (visible) return STARTING_POSITION;
 
-      return contentHeightRef.current;
+      return targetHeight;
     },
     (result, previous) => {
       if (result === previous) return;
 
-      scrollY.value = withTiming(result, {}, () => {
-        if (result === contentHeightRef.current) runOnJS(destroy)();
-      });
+      if (result === STARTING_POSITION && Platform.OS === 'ios') {
+        return (scrollY.value = withSpring(result, { damping: 14, restSpeedThreshold: 250 }));
+      }
+
+      if (result === targetHeight) {
+        return (scrollY.value = withTiming(result, {}, () => runOnJS(destroy)()));
+      }
+
+      scrollY.value = withTiming(result, {});
     },
     [visible],
   );
@@ -46,8 +54,8 @@ const Modal = React.memo(({ visible, setVisible, children, destroy }: Props) => 
       scrollY.value = Math.round(STARTING_POSITION + event.translationY);
     },
     onEnd: (event) => {
-      console.log('contentHeightRef.current', event.translationY, windowDimensions.height, contentHeightRef.current);
-      if (event.translationY >= contentHeightRef.current / 2) return runOnJS(setVisible)(false);
+      const isOver = event.translationY / contentHeight >= 0.5;
+      if (isOver) return runOnJS(setVisible)(false);
 
       if (Platform.OS === 'ios') return (scrollY.value = withSpring(STARTING_POSITION));
       scrollY.value = withTiming(STARTING_POSITION, {});
@@ -55,7 +63,7 @@ const Modal = React.memo(({ visible, setVisible, children, destroy }: Props) => 
   });
 
   const animatedStyles = useAnimatedStyle(() => {
-    return { backgroundColor: interpolateColor(scrollY.value, [0, contentHeightRef.current], SH_COLORS) };
+    return { backgroundColor: interpolateColor(scrollY.value, [0, contentHeight], SH_COLORS) };
   });
 
   const containerStyles = useAnimatedStyle(() => ({ transform: [{ translateY: scrollY.value }] }));
@@ -64,16 +72,16 @@ const Modal = React.memo(({ visible, setVisible, children, destroy }: Props) => 
     <Animated.View style={[StyleSheet.flatten({ flex: 1 }), animatedStyles]}>
       <PanGestureHandler onGestureEvent={eventHandler}>
         <Animated.View style={[StyleSheet.flatten({ flex: 1, justifyContent: 'flex-end' }), containerStyles]}>
-          <View onLayout={({ nativeEvent }) => (contentHeightRef.current = nativeEvent.layout.height)}>
+          <View onLayout={({ nativeEvent }) => setContentHeight(nativeEvent.layout.height - STARTING_POSITION)}>
             {children}
 
             <View style={StyleSheet.flatten({ height: STARTING_POSITION, backgroundColor: '#fff' })} />
           </View>
 
           {/* Overlay start */}
-          <Pressable
+          <TouchableOpacity
             onPress={() => setVisible(false)}
-            style={[s.overlay, StyleSheet.flatten({ top: -STARTING_POSITION })]}
+            style={[styles.overlay, StyleSheet.flatten({ top: -STARTING_POSITION })]}
           />
           {/* Overlay end */}
         </Animated.View>
