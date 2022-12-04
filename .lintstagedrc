@@ -1,0 +1,9 @@
+{
+  "*.{js,jsx}": [
+    "eslint --cache --fix"
+  ],
+  "*.{ts,tsx}": [
+    "bash -c tsc --skipLibCheck --noEmit  -p tsconfig.json",
+    "eslint --cache --fix"
+  ]
+}

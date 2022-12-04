@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky install"
   },
   "author": "Maksim Romanov (maksim.romanov@jetrockets.com)",
   "license": "ISC",
@@ -14,6 +15,8 @@
     "@jetrockets/eslint-config-typescript": "^0.0.171",
     "@react-native-community/eslint-config": "^3.2.0",
     "eslint": "^8.29.0",
+    "husky": "^8.0.2",
+    "lint-staged": "^13.0.4",
     "prettier": "^2.8.0"
   }
 }
