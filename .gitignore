@@ -74,3 +74,5 @@ api-access.json
 
 *.dSYM.zip
 *.p8
+
+lib
