@@ -1,20 +1,39 @@
 {
   "name": "@jetrockets/react-native-modal",
   "version": "1.0.0",
-  "description": "",
+  "description": "Light swipeable modal component IOS/Android",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "files": [
     "lib/**/*"
   ],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prepare": "husky install",
     "build": "tsc --project ./tsconfig.json",
     "clean": "node tools/cleanup"
   },
+  "keywords": [
+    "react-native",
+    "react",
+    "native",
+    "modal",
+    "android",
+    "ios",
+    "backdrop",
+    "simple",
+    "animated"
+  ],
   "author": "Maksim Romanov (maksim.romanov@jetrockets.com)",
   "license": "ISC",
+  "homepage": "https://github.com/jetrockets/react-native-modal",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jetrockets/react-native-modal"
+  },
   "devDependencies": {
     "@jetrockets/eslint-config-base": "^0.0.601",
     "@jetrockets/eslint-config-react": "^0.0.23",
